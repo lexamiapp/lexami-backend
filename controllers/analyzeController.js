@@ -1,6 +1,5 @@
 import fs from "fs";
 import Analysis from "../models/Analysis.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const analyzeCase = async (req, res) => {
   try {
@@ -21,16 +20,10 @@ You must provide a professional, accurate, and practical legal analysis.
 -----------------------------------
 📌 USER INPUT
 -----------------------------------
-Case Type: {caseType}
+Case Type: ${caseType}
 
 Case Summary:
-{summary}
-
-Extracted Document Content:
-{documentText}
-
-Voice Input:
-{voiceText}
+${summary}
 
 -----------------------------------
 📌 INSTRUCTIONS
@@ -78,12 +71,6 @@ Clearly state when professional legal help is required
 - Helpful
 - Clear
 - Not overly verbose
-Case Type: ${caseType}
-
-User Summary:
-${summary}
-
-Analyze this case in structured legal format.
 `;
 
     // 🔹 Convert files to Gemini format
@@ -100,26 +87,39 @@ Analyze this case in structured legal format.
       });
     }
 
-    // 🔹 Gemini setup
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-pro",
-    });
+    // 🔥 🔥 LATEST GEMINI API (NO SDK)
+    const apiKey = process.env.GEMINI_API_KEY;
 
-    // 🔹 Send to Gemini
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: prompt },
-            ...attachments,
-          ],
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ],
-    });
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: prompt },
+                ...attachments,
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048,
+          },
+        }),
+      }
+    );
 
-    const aiResult = result.response.text();
+    const data = await response.json();
+
+    const aiResult =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response from AI";
 
     // 🔹 Save to MongoDB
     const saved = await Analysis.create({
@@ -128,7 +128,7 @@ Analyze this case in structured legal format.
       result: aiResult,
     });
 
-    // 🔹 Cleanup uploaded files (important)
+    // 🔹 Cleanup uploaded files
     for (const file of files) {
       fs.unlinkSync(file.path);
     }
