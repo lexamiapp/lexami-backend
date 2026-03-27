@@ -3,9 +3,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const analyzeCaseWithGemini = async (prompt) => {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-pro",
-    systemInstruction: `
+  try {
+    const model = genAI.getGenerativeModel({
+      model: "gemini-pro",
+      systemInstruction: `
 You are an expert Indian legal advisor AI.
 
 Your task is to analyze a user's legal case based on:
@@ -15,20 +16,6 @@ Your task is to analyze a user's legal case based on:
 - Voice input transcript (if any)
 
 You must provide a professional, accurate, and practical legal analysis.
-
------------------------------------
-📌 USER INPUT
------------------------------------
-Case Type: {caseType}
-
-Case Summary:
-{summary}
-
-Extracted Document Content:
-{documentText}
-
-Voice Input:
-{voiceText}
 
 -----------------------------------
 📌 INSTRUCTIONS
@@ -61,24 +48,45 @@ Explain the situation logically and legally
 Highlight possible problems or weak points
 
 ## ✅ Recommended Next Steps
-Provide practical actions (e.g., file FIR, consult lawyer)
+Provide practical actions
 
 ## 💰 Cost & Time Estimate (India)
-Give rough estimate if possible
 
 ## 👨‍⚖️ When to Consult a Lawyer
-Clearly state when professional legal help is required
-
------------------------------------
-📌 TONE
------------------------------------
-- Professional
-- Helpful
-- Clear
-- Not overly verbose
 `
-  });
+    });
 
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+    // 🔥 Send request properly (IMPORTANT FIX)
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }],
+        },
+      ],
+    });
+
+    const response = result.response;
+
+    // 🔍 Debug (VERY IMPORTANT)
+    console.log("Gemini Raw Response:", JSON.stringify(response, null, 2));
+
+    // ✅ Safe extraction
+    let text = "";
+
+    if (response.candidates && response.candidates.length > 0) {
+      const parts = response.candidates[0].content.parts;
+      text = parts.map((p) => p.text || "").join("\n");
+    }
+
+    if (!text) {
+      throw new Error("Empty response from Gemini");
+    }
+
+    return text;
+
+  } catch (error) {
+    console.error("Gemini Service Error:", error.message);
+    throw error;
+  }
 };
