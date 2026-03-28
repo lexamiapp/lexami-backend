@@ -17,6 +17,7 @@ export const findRelevantDocs = async (query) => {
 
   // 🔥 Take top 3
   const topDocs = scored.slice(0, 3);
+  content: doc.content.slice(0, 300);
 
   console.log("Top RAG Docs:", topDocs.length);
 

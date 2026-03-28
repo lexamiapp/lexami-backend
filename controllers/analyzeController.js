@@ -67,7 +67,9 @@ Give structured legal analysis in simple language with:
           ],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 4096,
+            topP: 0.95,
+            topK: 40,
           },
         }),
       }
