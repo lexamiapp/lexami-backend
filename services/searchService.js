@@ -1,33 +1,7 @@
 import Document from "../models/Document.js";
 import { getEmbedding } from "./embeddingService.js";
 
-export const findRelevantDocs = async (query) => {
-  const queryEmbedding = await getEmbedding(query);
-
-  const docs = await Document.find();
-
-  // 🔥 Calculate similarity
-  const scored = docs.map(doc => {
-    const score = cosineSimilarity(queryEmbedding, doc.embedding);
-    return { ...doc._doc, score };
-  });
-
-  // 🔥 Sort by best match
-  scored.sort((a, b) => b.score - a.score);
-
-  // 🔥 Take top 3
-  const topDocs = scored.slice(0, 3);
-  content: doc.content.slice(0, 300);
-
-  console.log("Top RAG Docs:", topDocs.length);
-
-  // 🔥 Add source labels (IMPORTANT)
-  return topDocs
-    .map((doc, i) => `[Source ${i + 1}]: ${doc.content}`)
-    .join("\n\n");
-};
-
-// cosine similarity
+//  cosine similarity function
 function cosineSimilarity(a, b) {
   let dot = 0, normA = 0, normB = 0;
 
@@ -39,3 +13,51 @@ function cosineSimilarity(a, b) {
 
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
+
+export const findRelevantDocs = async (query) => {
+  try {
+    console.log(" Query:", query);
+
+    //  Get embedding of query
+    const queryEmbedding = await getEmbedding(query);
+
+    //  Fetch all documents
+    const docs = await Document.find();
+
+    if (!docs.length) {
+      console.log(" No documents found in DB");
+      return "";
+    }
+
+    // Calculate similarity scores
+    const scored = docs.map(doc => {
+      const score = cosineSimilarity(queryEmbedding, doc.embedding);
+      return {
+        content: doc.content,
+        score,
+      };
+    });
+
+    //  Sort by highest similarity
+    scored.sort((a, b) => b.score - a.score);
+
+    //  Take top 3 + limit size (IMPORTANT FIX)
+    const topDocs = scored.slice(0, 3).map((d) => ({
+      content: d.content.slice(0, 300), // limit length
+      score: d.score,
+    }));
+
+    console.log(" Top RAG Docs:", topDocs);
+
+    //  Format with sources
+    const formatted = topDocs
+      .map((doc, i) => `[Source ${i + 1}]: ${doc.content}`)
+      .join("\n\n");
+
+    return formatted;
+
+  } catch (error) {
+    console.error("❌ RAG SEARCH ERROR:", error);
+    return "";
+  }
+};
