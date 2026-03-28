@@ -1,15 +1,21 @@
 import fs from "fs";
 import Analysis from "../models/Analysis.js";
+import { findRelevantDocs } from "../services/searchService.js";
 
 export const analyzeCase = async (req, res) => {
   try {
     const { caseType, summary } = req.body;
     const files = req.files || [];
+    const relevantDocs = await findRelevantDocs(summary);
 
-    // 🔥 Build prompt safely
+    // Build prompt safely
     const prompt = `You are an expert Indian legal advisor AI.
 
 Analyze the following case:
+
+Use the following CONTEXT if relevant:
+
+${relevantDocs}
 
 Case Type: ${caseType || "Not provided"}
 

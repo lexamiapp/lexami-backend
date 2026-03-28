@@ -1,0 +1,354 @@
+Source: AWS Open Data - indian-high-court-judgments/data/pdf/year=1992/court=27_1/bench=newos/HCBM020085531989_1_2008-08-30.pdf
+Ref: data/pdf/year=1992/court=27_1/bench=newos/HCBM020085531989_1_2008-08-30.pdf
+
+                                -:  1  :-
+                  IN THE HIGH COURT OF JUDICATURE AT BOMBAY
+                    ORDINARY ORIGINAL CIVIL JURISDICTION
+                      COMPANY PETITION NO.626 OF 1989
+                               In the matter of M/s.Intex Computers
+                               Pvt. Ltd. (in Liqn.)
+             Omega Power System                         : Petitioner
+                                 ...
+             Mr.Snehal Shah with Ms Mahek Bookwala i/b. Sajjal Patel
+             for purchaser.
+             Mr.Arif Bookwala for society.
+             Ms Soumya Srikrishna for Bank of Baroda.
+             Mrs.Aruna Pai for Official Liquidator.
+                                 ...
+                                          CORAM : S.A. BOBDE, J.
+                                          DATE : AUGUST 30, 2008.
+             ORAL ORDER:
+             1.   The  Official  Liquidator  has in  his  report  dated
+             24.3.2008 prayed for an order declaring the sale conducted
+             for satisfaction of the society's dues as void in terms of
+             section 537(1) of the Companies Act, 1956.
+             2.    The  Official  Liquidator   has  been  appointed  as
+             Liquidator   of  M/s.Intex  Computers   Pvt.   Ltd.    (in
+             liquidation)  by  this Court in pursuance of an order  for
+             winding  up  of  the  company passed  on  15.1.1992.   The
+                                -:  2  :-
+             relevant  facts  leading  to the sale at the  instance  of
+             M/s.Hansa  "D"  Industrial Premises  Co-operative  Society
+             Ltd.,  which  is  now  sought  to be  set  aside,  are  as
+             follows:-
+                     On 14.6.2000 an award was passed by the Registrar
+             of  Co-operative  Societies  under  section  101  of  the
+             Maharashtra Co-operative Societies Act, 1960, hereinafter
+             referred  to as the "Co-operative Societies Act", on  the
+             application made by the society as a claimant against the
+             company  i.e.   Intex  Computers Pvt.   ltd.,  which  was
+             arraigned  as  an  opponent.  The claim was made  by  the
+             society  for  arrears of maintenance.   The  Co-operative
+             Court  passed an award in the sum of Rs.2,83,328.44  with
+             interest  at  12% per annum from  1.6.2000.   Apparently,
+             settlement  between  the parties failed and  the  society
+             wrote  a  letter to the company to clear the  outstanding
+             dues as per the award dated 14.6.2000.  The company which
+             was then in liquidation did not comply with the demand of
+             the  society  and,  therefore, the  society  applied  for
+             warrant  of  execution  in execution of  the  award.   On
+             13.8.2004  the  warrant for sale of the property and  for
+             recovery of a sum of Rs.4,14,949.32 was issued.  The sale
+             of  the  property was duly advertised.  The property  was
+             sold  by way of public auction after due publicity.  Four
+             bids were received by the Sheriff pursuant to the auction
+                                -:  3  :-
+             purchase.   This Court in Execution Application no.384 of
+             2003  recorded that the highest bidder has raised his bid
+             to Rs.40,00,000/-, after directing that notices be issued
+             to  the  other  bidders to ascertain  whether  they  were
+             interested  in raising their bids and the Court  directed
+             sale of the property in the sum of Rs.40,00,000/-.  After
+             sale, the Sheriff submitted a report to the learned Judge
+             taking  up  execution application and the  learned  Judge
+             made  the  Sheriff's report absolute in terms  of  prayer
+             clauses  (a)  to (h) directing that upon the dues of  the
+             society being paid in full as per the decree, the society
+             shall  hand over all documents, deeds and writing to  the
+             auction   purchaser.    This  was  by  an   order   dated
+             14.12.2007.   The  said  amount   of  Rs.40,00,000/-   is
+             admittedly lying in this Court.
+             3.  The Official Liquidator has applied for setting aside
+             of  the  sale by public auction under section 537 of  the
+             Companies Act which reads as follows:-
+                     "537.   Avoidance  of certain  attachments,
+                     executions,   etc.,   in   winding  up   by
+                     Tribunal.--  (1) Where any company is being
+                     wound up by Tribunal--
+                        (a)  any    attachment,     distress   or
+                                -:  4  :-
+                             execution  put  in   force,  without
+                             leave  of  the Tribunal against  the
+                             estate  or  effects of the  company,
+                             after   the  commencement   of   the
+                             winding up;  or
+                        (b)  any  sale held, without leave of the
+                             Tribunal of any of the properties or
+                             effects  of  the company after  such
+                             commencement
+                     shall be void.
+                     (2)  Nothing in this section applies to any
+                     proceedings  for the recovery of any tax or
+                     impost   or  any  dues   payable   to   the
+                     Government."
+             There  is  no  dispute that the property of  the  company
+             which  was  being wound up was being sold by  the  Court.
+             However,  it is clear that the sale without permission of
+             the  Court  shall  be void only where section  537  would
+             apply.
+             4.   Mr.Bookwala,  the learned counsel for  the  society,
+             opposes  the  prayer  of the Official  Liquidator,  inter
+                                -:  5  :-
+             alia,  on the ground that having regard to the scheme  of
+             the  Companies Act under which the company is being wound
+             up  and the Co-operative Societies Act which governs  the
+             property  in  question  belonging  to  the  company,  the
+             Company  Court has no jurisdiction to adjudicate upon and
+             set  aside  the  sale conducted  under  the  Co-operative
+             Societies Act.
+             5.   The  relevant  provisions of the two  Acts  must  be
+             examined to appreciate the contention.
+             6.   The Maharashtra Co-operative Societies Act, 1960  is
+             an  enactment  under  Entry  32 of  List  II  of  Seventh
+             Schedule  of the Constitution of India which empowers the
+             State Legislature to legislate on co-operative societies.
+             It  is necessary to see how the Act operates in  relation
+             to  a  dispute regarding the property of  a  co-operative
+             society held by a person, including a company and further
+             see  which  Court  has jurisdiction in relation  to  such
+             dispute.   Section  91 of the Co-operative Societies  Act
+             makes  a  dispute, inter alia, between a society and  its
+             member,   such  as  the  present   one,  triable   by   a
+             Co-operative Court.  Section 91(3) provides that no Court
+             shall  have  jurisdiction to entertain any suit or  other
+             proceedings  in  respect  of any dispute referred  to  in
+             sub-section  (1),  save  as   otherwise  provided   under
+                                -:  6  :-
+             sub-section  (2)  of  section  93.   Sub-section  (3)  of
+             section 91 reads as follows:-
+                     "(3)  Save  as   otherwise  provided  under
+                     sub-section  (2)  of section 93,  no  Court
+                     shall  have  jurisdiction to entertain  any
+                     suit or other proceedings in respect of any
+                     dispute referred to in sub-section (1)."
+             Section  163  of  the  Co-operative  Societies  Act  bars
+             jurisdiction of other Courts in the following terms:-
+                     "163.  Bar of jurisdiction of Courts.-- (1)
+                     Save  as expressly provided in this Act, no
+                     Civil  or  Revenue  Court  shall  have  any
+                     jurisdiction in respect of--
+                     (a)   ................................
+                     (b)   ................................
+                     (c)   ................................
+                      (2) ................................
+                     (3)  All orders, decisions or awards passed
+                     in  accordance  with this Act or the  rules
+                     shall, subject to the provisions for appeal
+                     or  revision in this Act be final;  and  no
+                                -:  7  :-
+                     such  order,  decision  or award  shall  be
+                     liable   to  be   challenged,  set   aside,
+                     modified,  revised or declared void in  any
+                     Court  upon  the merits or upon  any  other
+                     ground whatsoever."
+             7.   Section 167 of the Co-operative Societies Act  reads
+             as follows:-
+                     "167.   Companies  Act not to apply.--  For
+                     the removal of doubt, it is hereby declared
+                     that  the provisions of the Companies  Act,
+                     1956,   shall   not   apply  to   societies
+                     registered  or  deemed  to  be  registered;
+                     under this Act."
+             From  the above provisions, it is clear that the  dispute
+             which  has  resulted in the sale in question was  triable
+             exclusively  by a Co-operative Court under section 91  of
+             the   Co-operative  Societies  Act.    No  other   Court,
+             including  the  Company  Court, has any  jurisdiction  to
+             entertain  the dispute.  All orders, decisions and awards
+             passed  in accordance with the Co-operative Societies Act
+             were immune from challenge or modification or revision in
+             any  Court  upon  the  merits or upon  any  other  ground
+             whatsoever,  vide section 163(3).  In any event,  section
+                                -:  8  :-
+             167 of the Co-operative Societies Act makes it clear that
+             the  Companies Act will have no application to  societies
+             registered under the Co-operative Societies Act.
+             8.   Mrs.Pai,  the  learned   counsel  for  the  Official
+             Liquidator,  submitted  that  since the  company  was  in
+             liquidation  and  since the property of the  company  has
+             been  sold,  such  sale  and appropriation  of  the  sale
+             proceeds  by  the society would be in breach  of  section
+             529-A  of  the Companies Act, 1956, which lays  down  the
+             priority  according  to  which the debts of  the  company
+             shall  be  paid.  This contention cannot be  accepted  in
+             view  of  the  scheme of the Co-operative  Societies  Act
+             which   exclusively  governs    co-operative   societies,
+             including all disputes in relation to the property of the
+             society  between itself and its members.  Any dispute  in
+             relation to the property of a co-operative society is not
+             governed  by the provisions of the Act, having regard  to
+             the  provisions  of  section   167  of  the  Co-operative
+             Societies Act which declares that the Companies Act shall
+             not  apply  to  co-operative  societies.   The  words  of
+             section  167 have a wide import and it is clear that  the
+             intention  of the Legislature is to remove any doubt that
+             the  provisions  of  the  Companies   Act  may  apply  to
+             co-operative   societies.   Thus,  the   property  of   a
+             co-operative society and the disputes between its members
+                                -:  9  :-
+             and the society in relation thereto cannot be affected by
+             the  provisions of winding up contained in the  Companies
+             Act.
+             9.   Mr.Bookwala, the learned counsel for the society  in
+             support  of his submission that the proceedings under the
+             Co-operative  Societies Act which culminated in the  sale
+             of  the  company's property in favour of  a  co-operative
+             society,  relied on the decision of the Supreme Court  in
+             Damji  v.   L.I.C.  of India (AIR 1966 SC 135) where  the
+             question  was  whether section 446 of the  Companies  Act
+             which mandates that no suit or legal proceedings shall be
+             commenced  or  continued against the company except  with
+             the  leave  of  the Company Court could  operate  on  the
+             proceedings  which  were pending before the  Tribunal  or
+             which  may  be  sought to be commenced  before  it.   The
+             Supreme  Court  considered the provisions of  winding  up
+             under  the  Companies  Act  and section 41  of  the  Life
+             Insurance Corporation Act which is similar to section 163
+             of the Co-operative Societies Act barred the jurisdiction
+             of  all civil Courts to entertain or adjudicate upon  any
+             matter  which  the  Tribunal  under  the  Life  Insurance
+             Corporation Act is empowered to decide or determine under
+             that  Act.  The Supreme Court observed in paragraphs  17,
+             18 and 19 as follows:-
+                                -:  10  :-
+                     "(17)  In this connection, reference may be
+                     made  to  S.   41  of  the  LIC  Act  which
+                     provides  that  no civil Court  shall  have
+                     jurisdiction  to  entertain  or  adjudicate
+                     upon  any  matter  which   a  Tribunal   is
+                     empowered to decide or determine under that
+                     Act.   It is not disputed that the Tribunal
+                     had   jurisdiction   to    entertain    the
+                     application   of   the    Corporation   and
+                     adjudicate  on the matters raised  thereby.
+                     The   Tribunal  is   given  the   exclusive
+                     jurisdiction over this matter.
+                     (18)  It  is  in   view  of  the  exclusive
+                     jurisdiction  which Sub-s.  (2) of S.   446
+                     of the Companies Act confers on the company
+                     Court  to entertain or dispose of any  suit
+                     or  proceeding  by or against a company  or
+                     any  claim  made by or against it that  the
+                     restriction  referred  to in Sub-s.(1)  has
+                     been  imposed  on the commencement  of  the
+                     proceedings   or  proceeding    with   such
+                     proceedings  against  a   company  after  a
+                     winding-up order has been made.  In view of
+                     S.  41 of the LIC Act the company Court has
+                     no jurisdiction to entertain and adjudicate
+                                -:  11  :-
+                     upon  any  matter  which  the  Tribunal  is
+                     empowered to decide or determine under that
+                     Act.   It is not disputed that the Tribunal
+                     has jurisdiction under the Act to entertain
+                     and  decide matters raised in the  petition
+                     filed  by  the Corporation under S.  15  of
+                     the  LIC  Act.   It must  follow  that  the
+                     consequential  provisions of Sub-s.  (1) of
+                     S.   446  of  the Companies  Act  will  not
+                     operate on the proceedings which be pending
+                     before  the Tribunal or which may be sought
+                     to be commenced before it.
+                     (19) Further, the provisions of the special
+                     Act  i.e.,  the LIC Act, will override  the
+                     provisions  of  the general Act, viz.,  the
+                     Companies  Act which is an Act relating  to
+                     companies in general."
+             It  is  clear that the ratio of the decision  in  Damji's
+             case  (supra) applies to the scheme of the Companies  Act
+             and  the  Co-operative  Societies  Act  involved  in  the
+             present  case and that the provisions of the Co-operative
+             Societies  Act  must be treated as those of  special  Act
+             which  relate  to  co-operative societies  in  particular
+             which  override  the provisions of the general  Act  i.e.
+                                -:  12  :-
+             the  Companies  Act  which  is an  Act  relating  to  the
+             companies in general.
+             10.  Similarly, the observations relevant to the  present
+             dispute  were made by a Constitution Bench of the Supreme
+             Court  in  S.V.  Kandeakar v.  V.M.  Deshpande [(1972)  1
+             SCC 438] wherein in paragraph 17, it has been observed as
+             follows:-
+                     "Looking at the legislative history and the
+                     scheme  of the Companies Act,  particularly
+                     the  language  of  Section 446, read  as  a
+                     whole,   the   expression    "other   legal
+                     proceeding"  in  sub-section  (1)  and  the
+                     expression    "legal      proceeding"    in
+                     sub-section  (2) convey the same sense  and
+                     the  proceedings  in both the  sub-sections
+                     must  be such as can appropriately be dealt
+                     with   by  the  winding   up  court.    The
+                     Income-tax Act is a complete code and it is
+                     particularly   so  with   respect  to   the
+                     assessment and re-assessment of Income-tax.
+                     The  fact  that  after the  amount  of  tax
+                     payable  by an assessee has been determined
+                     or  quantified,  its   realisation  from  a
+                     company  in liquidation is governed by  the
+                                -:  13  :-
+                     Act  because  the income-tax  payable  also
+                     being  a  debt has to rank pari passu  with
+                     other  debts due from the company does  not
+                     mean  that  the assessment proceedings  for
+                     computing the amount of tax must be held to
+                     be such other legal proceedings as can only
+                     be  started or continued with the leave  of
+                     the  liquidation court under Section 446 of
+                     the  Act.   The  liquidation  court  cannot
+                     perform   the  functions    of   Income-tax
+                     Officers  while assessing the amount of tax
+                     payable  by  the  assessee   even  if   the
+                     assessee  be  the  company which  is  being
+                     wound up by the court."
+             The earlier decision of the Supreme Court in Damji's case
+             was expressly approved in this case.
+             11. In Allahabad Bank v.  Canara Bank [(2000) 4 SCC 406],
+             the  Supreme Court observed in paragraphs 30 and 31 where
+             the  question was whether leave of the Company Court  was
+             necessary  to  proceed  with  a  claim  before  the  Debt
+             Recovery  Tribunal or in respect of execution proceedings
+             before  the Recovery Officer that there was no such  need
+             to  seek  leave  of the Company Court  since  the  latter
+             proceedings  could  not  be transferred  to  the  Company
+                                -:  14  :-
+             Court, vide paragraph 30.
+             12.   Recently,  in Greater Bombay Coop.  Bank  Ltd.   v.
+             United  Yarn  Tex  (P) Ltd.  [(2007) 6  SCC  236],  while
+             considering  the  scheme of the Recovery of Debts Due  to
+             Banks  and  Financial  Institutions  Act,  1993  and  the
+             Co-operative  Societies Act, Their Lordships reversed the
+             judgement  of  this  Court which held  that  Co-operative
+             Banks  are  banking companies within the meaning  of  the
+             Banking  Regulation Act and, therefore, the provisions of
+             the  Recovery  of  Debts  Due   to  Banks  and  Financial
+             Institutions  Act,  1993 were applicable to  recovery  of
+             dues  by  the co-operative bank from their  members,  and
+             observed  that  the  Co-operative  Societies  Act  was  a
+             complete  self-contained Code which governs the  recovery
+             of dues of the co-operative society.
+             13.  In view of the aforesaid decision, it is clear  that
+             the  Co-operative Societies Act is a self-contained  Code
+             and  confers  exclusive jurisdiction on the  Co-operative
+             Courts  for  adjudication of disputes arising under  that
+             Act  and the Companies Act, 1956 cannot deal with any  of
+             the   disputes  within  the   exclusive  domain  of   the
+             Co-operative  Court nor can entertain any proceedings for
+             setting  aside  the orders passed under the  Co-operative
+             Societies  Act.   Therefore, the prayer of  the  Official
+                                -:  15  :-
+             Liquidator  that  the sale conducted in pursuance of  the
+             award of the Co-operative Court be declared void in terms
+             of section 547 of the Companies Act cannot be entertained
+             and is hereby rejected.  Order accordingly.
+                                                  S.A. BOBDE, J.
