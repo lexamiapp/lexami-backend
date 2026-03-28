@@ -6,72 +6,24 @@ export const analyzeCase = async (req, res) => {
     const { caseType, summary } = req.body;
     const files = req.files || [];
 
-    // 🔹 Build prompt
+    // 🔥 Build prompt safely
     const prompt = `You are an expert Indian legal advisor AI.
 
-Your task is to analyze a user's legal case based on:
-- Case type
-- User-provided summary
-- Uploaded documents (if any)
-- Voice input transcript (if any)
+Analyze the following case:
 
-You must provide a professional, accurate, and practical legal analysis.
-
------------------------------------
-📌 USER INPUT
------------------------------------
-Case Type: ${caseType}
+Case Type: ${caseType || "Not provided"}
 
 Case Summary:
-${summary}
+${summary || "Not provided"}
 
------------------------------------
-📌 INSTRUCTIONS
------------------------------------
-
-1. Use simple language (non-lawyers should understand)
-2. Follow Indian law context (IPC, CrPC, Family Law, etc.)
-3. DO NOT give guarantees (like "you will win")
-4. Clearly mention risks and uncertainties
-5. Suggest actionable next steps
-6. If data is incomplete, make reasonable assumptions and mention them
-
------------------------------------
-📌 OUTPUT FORMAT (STRICT)
------------------------------------
-
-## 🧾 Case Summary
-Briefly restate the case in simple terms
-
-## ⚖️ Legal Issues Identified
-- List key legal issues
-
-## 📚 Applicable Laws
-- Mention relevant Indian laws / sections
-
-## 🔍 Legal Analysis
-Explain the situation logically and legally
-
-## ⚠️ Risks & Challenges
-Highlight possible problems or weak points
-
-## ✅ Recommended Next Steps
-Provide practical actions (e.g., file FIR, consult lawyer)
-
-## 💰 Cost & Time Estimate (India)
-Give rough estimate if possible
-
-## 👨‍⚖️ When to Consult a Lawyer
-Clearly state when professional legal help is required
-
------------------------------------
-📌 TONE
------------------------------------
-- Professional
-- Helpful
-- Clear
-- Not overly verbose
+Give structured legal analysis in simple language with:
+- Legal issues
+- Applicable laws
+- Risks
+- Next steps
 `;
+
+    console.log("PROMPT:", prompt);
 
     // 🔹 Convert files to Gemini format
     const attachments = [];
@@ -87,11 +39,11 @@ Clearly state when professional legal help is required
       });
     }
 
-    // 🔥 🔥 LATEST GEMINI API (NO SDK)
+    // USE v1beta (IMPORTANT FIX)
     const apiKey = process.env.GEMINI_API_KEY;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
@@ -117,20 +69,33 @@ Clearly state when professional legal help is required
 
     const data = await response.json();
 
-    const aiResult =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response from AI";
+    console.log("GEMINI RESPONSE:", JSON.stringify(data, null, 2));
 
-    // 🔹 Save to MongoDB
+    //  BETTER RESPONSE HANDLING
+    let aiResult = "No response from AI";
+
+    if (data?.candidates?.length > 0) {
+      aiResult = data.candidates[0]?.content?.parts?.[0]?.text || aiResult;
+    }
+
+    //  HANDLE API ERRORS
+    if (data.error) {
+      console.error("Gemini API Error:", data.error);
+      aiResult = "AI failed: " + data.error.message;
+    }
+
+    //  Save to MongoDB
     const saved = await Analysis.create({
       caseType,
       summary,
       result: aiResult,
     });
 
-    // 🔹 Cleanup uploaded files
+    //  Cleanup uploaded files
     for (const file of files) {
-      fs.unlinkSync(file.path);
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
     }
 
     res.json({
@@ -139,7 +104,10 @@ Clearly state when professional legal help is required
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+    console.error("SERVER ERROR:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      details: error.message,
+    });
   }
 };
