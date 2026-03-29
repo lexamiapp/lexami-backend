@@ -80,6 +80,7 @@ ${summary}
 - Clear, structured, and professional
 - Simple language (non-lawyers)
 - No unnecessary verbosity
+If the response is long, continue writing until fully complete. Do NOT stop midway.
 `
   });
 

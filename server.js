@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import analyzeRoutes from "./routes/analyze.js";
+import translateRoutes from "./routes/translateRoutes.js";
+
 
 dotenv.config();
 
@@ -10,6 +12,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api", translateRoutes);
 
 app.use("/api", analyzeRoutes);
 
