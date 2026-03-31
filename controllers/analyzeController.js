@@ -1,6 +1,4 @@
 import fs from "fs";
-import pkg from "pdf-parse";
-const pdf = pkg;
 import Analysis from "../models/Analysis.js";
 import { findRelevantDocs } from "../services/searchService.js";
 
@@ -26,6 +24,7 @@ const extractTextFromFiles = async (files) => {
 
 export const analyzeCase = async (req, res) => {
   try {
+    const pdf = (await import("pdf-parse")).default;
     const { caseType, summary } = req.body;
     const files = req.files || [];
 
