@@ -24,8 +24,10 @@ const extractTextFromFiles = async (files) => {
 
 export const analyzeCaseStream = async (req, res) => {
   try {
-    const pdf = (await import("pdf-parse")).default;
-    const { caseType, summary } = req.body;
+    const pdfModule = await import("pdf-parse");
+    const pdf = pdfModule.default || pdfModule;
+    const caseType = req.body?.caseType || "";
+    const summary = req.body?.summary || "";
     const files = req.files || [];
 
     console.log(" STREAM + FILE BACKEND HIT");
@@ -99,6 +101,6 @@ Give structured legal analysis.
 
   } catch (error) {
     console.error("STREAM ERROR:", error);
-    res.end("Error occurred");
+    res.status(500).end("Error: " + error.message);
   }
 };

@@ -24,7 +24,8 @@ const extractTextFromFiles = async (files) => {
 
 export const analyzeCase = async (req, res) => {
   try {
-    const pdf = (await import("pdf-parse")).default;
+    const pdfModule = await import("pdf-parse");
+    const pdf = pdfModule.default || pdfModule;
     const { caseType, summary } = req.body;
     const files = req.files || [];
 
