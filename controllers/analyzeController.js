@@ -1,52 +1,80 @@
 import fs from "fs";
+import pdf from "pdf-parse";
 import Analysis from "../models/Analysis.js";
 import { findRelevantDocs } from "../services/searchService.js";
+
+//  Extract text from files (CHEAP + EFFICIENT)
+const extractTextFromFiles = async (files) => {
+  let text = "";
+
+  for (const file of files) {
+    try {
+      if (file.mimetype === "application/pdf") {
+        const dataBuffer = fs.readFileSync(file.path);
+        const pdfData = await pdf(dataBuffer);
+
+        text += "\n\n[DOCUMENT]\n" + pdfData.text.slice(0, 3000); // 🔥 limit size
+      }
+    } catch (err) {
+      console.error("File processing error:", err);
+    }
+  }
+
+  return text;
+};
 
 export const analyzeCase = async (req, res) => {
   try {
     const { caseType, summary } = req.body;
     const files = req.files || [];
-    const relevantDocs = await findRelevantDocs(summary);
 
-    // Build prompt safely
-    const prompt = `You are an expert Indian legal advisor AI.
+    console.log(" ANALYZE API HIT");
 
-Analyze the following case:
-
-Use the following CONTEXT if relevant:
-
-${relevantDocs}
-
-Case Type: ${caseType || "Not provided"}
-
-Case Summary:
-${summary || "Not provided"}
-
-Give structured legal analysis in simple language with:
-- Legal issues
-- Applicable laws
-- Risks
-- Next steps
-`;
-
-    console.log("PROMPT:", prompt);
-
-    // 🔹 Convert files to Gemini format
-    const attachments = [];
-
-    for (const file of files) {
-      const data = fs.readFileSync(file.path);
-
-      attachments.push({
-        inlineData: {
-          data: data.toString("base64"),
-          mimeType: file.mimetype,
-        },
-      });
+    //  Avoid empty embedding calls
+    let relevantDocs = "";
+    if (summary && summary.trim().length > 10) {
+      relevantDocs = await findRelevantDocs(summary);
     }
 
-    // USE v1beta (IMPORTANT FIX)
+    //  Extract file text instead of sending files
+    const documentText = await extractTextFromFiles(files);
+
+    //  LIMIT CONTEXT SIZE (VERY IMPORTANT)
+    const trimmedDocs = relevantDocs.slice(0, 2000);
+
+    //  OPTIMIZED PROMPT (LOW TOKENS + HIGH QUALITY)
+    const prompt = `You are an expert Indian legal advisor.
+
+Analyze the case using the given details.
+
+-----------------------------------
+CASE TYPE:
+${caseType || "Not provided"}
+
+CASE SUMMARY:
+${summary || "Not provided"}
+
+DOCUMENT CONTENT:
+${documentText || "None"}
+
+REFERENCE CONTEXT:
+${trimmedDocs || "None"}
+-----------------------------------
+
+Provide structured response:
+
+1. Case Summary  
+2. Legal Issues  
+3. Applicable Laws (India)  
+4. Risks  
+5. Recommended Actions  
+
+Use simple language. Do not guarantee outcomes.
+`;
+
     const apiKey = process.env.GEMINI_API_KEY;
+
+    console.log(" CALLING GEMINI");
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -59,17 +87,12 @@ Give structured legal analysis in simple language with:
           contents: [
             {
               role: "user",
-              parts: [
-                { text: prompt },
-                ...attachments,
-              ],
+              parts: [{ text: prompt }], //  NO FILE ATTACHMENTS
             },
           ],
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 4096,
-            topP: 0.95,
-            topK: 40,
+            temperature: 0.6, 
+            maxOutputTokens: 2048, 
           },
         }),
       }
@@ -77,29 +100,28 @@ Give structured legal analysis in simple language with:
 
     const data = await response.json();
 
-    console.log("GEMINI RESPONSE:", JSON.stringify(data, null, 2));
+    console.log("GEMINI RESPONSE RECEIVED");
 
-    //  BETTER RESPONSE HANDLING
     let aiResult = "No response from AI";
 
     if (data?.candidates?.length > 0) {
-      aiResult = data.candidates[0]?.content?.parts?.[0]?.text || aiResult;
+      aiResult =
+        data.candidates[0]?.content?.parts?.[0]?.text || aiResult;
     }
 
-    //  HANDLE API ERRORS
     if (data.error) {
       console.error("Gemini API Error:", data.error);
       aiResult = "AI failed: " + data.error.message;
     }
 
-    //  Save to MongoDB
+    //  SAVE RESULT
     const saved = await Analysis.create({
       caseType,
       summary,
       result: aiResult,
     });
 
-    //  Cleanup uploaded files
+    //  CLEANUP FILES
     for (const file of files) {
       if (fs.existsSync(file.path)) {
         fs.unlinkSync(file.path);
@@ -113,6 +135,7 @@ Give structured legal analysis in simple language with:
 
   } catch (error) {
     console.error("SERVER ERROR:", error);
+
     res.status(500).json({
       error: "Internal Server Error",
       details: error.message,

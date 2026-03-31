@@ -1,9 +1,16 @@
 import Document from "../models/Document.js";
 import { getEmbedding } from "./embeddingService.js";
 
-//  cosine similarity function
+//SIMPLE CACHE (VERY IMPORTANT)
+const embeddingCache = {};
+
+//cosine similarity
 function cosineSimilarity(a, b) {
-  let dot = 0, normA = 0, normB = 0;
+  if (!a || !b || a.length !== b.length) return 0;
+
+  let dot = 0,
+    normA = 0,
+    normB = 0;
 
   for (let i = 0; i < a.length; i++) {
     dot += a[i] * b[i];
@@ -11,53 +18,67 @@ function cosineSimilarity(a, b) {
     normB += b[i] * b[i];
   }
 
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB) + 1e-10);
 }
 
 export const findRelevantDocs = async (query) => {
   try {
-    console.log(" Query:", query);
+    console.log("Query:", query);
 
-    //  Get embedding of query
-    const queryEmbedding = await getEmbedding(query);
-
-    //  Fetch all documents
-    const docs = await Document.find();
-
-    if (!docs.length) {
-      console.log(" No documents found in DB");
+    // SKIP EMBEDDING FOR SMALL INPUT (COST SAVING)
+    if (!query || query.trim().length < 10) {
+      console.log("Query too small, skipping RAG");
       return "";
     }
 
-    // Calculate similarity scores
-    const scored = docs.map(doc => {
+    // CACHE CHECK (BIG COST SAVER)
+    let queryEmbedding;
+
+    if (embeddingCache[query]) {
+      console.log("Using cached embedding");
+      queryEmbedding = embeddingCache[query];
+    } else {
+      console.log("Generating embedding...");
+      queryEmbedding = await getEmbedding(query);
+      embeddingCache[query] = queryEmbedding;
+    }
+
+    //  LIMIT DOCUMENTS FETCH (PERFORMANCE)
+    const docs = await Document.find().limit(50); // instead of all
+
+    if (!docs.length) {
+      console.log(" No documents found");
+      return "";
+    }
+
+    //  SCORE DOCUMENTS
+    const scored = [];
+
+    for (const doc of docs) {
+      if (!doc.embedding) continue;
+
       const score = cosineSimilarity(queryEmbedding, doc.embedding);
-      return {
+
+      scored.push({
         content: doc.content,
         score,
-      };
-    });
+      });
+    }
 
-    //  Sort by highest similarity
+    //  SORT
     scored.sort((a, b) => b.score - a.score);
 
-    //  Take top 3 + limit size (IMPORTANT FIX)
-    const topDocs = scored.slice(0, 3).map((d) => ({
-      content: d.content.slice(0, 300), // limit length
-      score: d.score,
-    }));
+    //  TAKE TOP 3 (LIMIT SIZE)
+    const topDocs = scored.slice(0, 3).map((d, i) => {
+      return `[Source ${i + 1}]: ${d.content.slice(0, 300)}`;
+    });
 
-    console.log(" Top RAG Docs:", topDocs);
+    console.log("Top Docs Selected");
 
-    //  Format with sources
-    const formatted = topDocs
-      .map((doc, i) => `[Source ${i + 1}]: ${doc.content}`)
-      .join("\n\n");
-
-    return formatted;
+    return topDocs.join("\n\n");
 
   } catch (error) {
-    console.error("❌ RAG SEARCH ERROR:", error);
+    console.error("RAG SEARCH ERROR:", error);
     return "";
   }
 };
