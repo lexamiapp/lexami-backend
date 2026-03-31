@@ -28,6 +28,10 @@ export const analyzeCase = async (req, res) => {
     const { caseType, summary } = req.body;
     const files = req.files || [];
 
+    if (!files || files.length === 0) {
+    console.log("No files uploaded");
+}
+
     console.log(" ANALYZE API HIT");
 
     //  Avoid empty embedding calls
