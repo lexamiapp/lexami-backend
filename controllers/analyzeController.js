@@ -1,5 +1,6 @@
 import fs from "fs";
-import pdf from "pdf-parse";
+import pkg from "pdf-parse";
+const pdf = pkg;
 import Analysis from "../models/Analysis.js";
 import { findRelevantDocs } from "../services/searchService.js";
 
