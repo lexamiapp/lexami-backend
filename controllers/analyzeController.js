@@ -12,7 +12,7 @@ const extractTextFromFiles = async (files) => {
         const dataBuffer = fs.readFileSync(file.path);
         const pdfData = await pdf(dataBuffer);
 
-        text += "\n\n[DOCUMENT]\n" + pdfData.text.slice(0, 3000); // 🔥 limit size
+        text += "\n\n[DOCUMENT]\n" + pdfData.text.slice(0, 3000); // limit size
       }
     } catch (err) {
       console.error("File processing error:", err);
@@ -82,7 +82,7 @@ Use simple language. Do not guarantee outcomes.
     console.log(" CALLING GEMINI");
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite-001:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
