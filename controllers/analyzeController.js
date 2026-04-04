@@ -96,8 +96,8 @@ Use simple language. Do not guarantee outcomes.
             },
           ],
           generationConfig: {
-            temperature: 0.6, 
-            maxOutputTokens: 2048, 
+            temperature: 0.7, 
+            maxOutputTokens: 4096, 
           },
         }),
       }
