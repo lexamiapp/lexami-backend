@@ -4,7 +4,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const analyzeCaseWithGemini = async (prompt) => {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-pro",
     systemInstruction: `
 You are a highly experienced Indian legal advisor AI.
 
