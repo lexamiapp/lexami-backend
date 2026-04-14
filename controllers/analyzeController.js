@@ -2,131 +2,178 @@ import fs from "fs";
 import Analysis from "../models/Analysis.js";
 import { findRelevantDocs } from "../services/searchService.js";
 
-//  Extract text from files (CHEAP + EFFICIENT)
-const extractTextFromFiles = async (files) => {
-  let text = "";
+// 🔥 FAIL-PROOF GEMINI CALL
+const callGeminiWithFallback = async (prompt, attachments, apiKey) => {
+  const models = [
+    "models/gemini-2.5-flash",
+    "models/gemini-2.0-flash",
+    "models/gemini-2.5-flash-lite"
+  ];
+
+  const MAX_RETRIES = 2;
+
+  for (const model of models) {
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        console.log(`Trying ${model} (Attempt ${attempt})`);
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+            body: JSON.stringify({
+              contents: [
+                {
+                  role: "user",
+                  parts: [
+                    { text: prompt },
+                    ...attachments // 🔥 images support
+                  ],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.5,
+                maxOutputTokens: 1200,
+                topP: 0.9,
+              },
+            }),
+          }
+        );
+
+        clearTimeout(timeout);
+
+        const data = await response.json();
+
+        if (data?.candidates?.length > 0) {
+          const text = data.candidates[0]?.content?.parts?.[0]?.text;
+
+          if (text && text.trim().length > 50) {
+            console.log(`✅ Success with ${model}`);
+            return text;
+          }
+        }
+
+      } catch (error) {
+        console.log(`❌ ${model} failed (Attempt ${attempt}):`, error.message);
+        await new Promise(r => setTimeout(r, 500));
+      }
+    }
+  }
+
+  // 🔥 FINAL FALLBACK (NEVER FAIL)
+  return `
+⚠️ AI is currently busy.
+
+Basic Advice:
+- Check your case details carefully
+- Gather proper evidence
+- Consult a legal professional
+
+Try again in a few seconds.
+`;
+};
+
+// 🔥 FILE PROCESSING (PDF + IMAGE)
+const extractTextFromFiles = async (files, pdf) => {
+  let documentText = "";
+  const attachments = [];
 
   for (const file of files) {
     try {
-      if (file.mimetype === "application/pdf") {
-        const dataBuffer = fs.readFileSync(file.path);
-        const pdfData = await pdf(dataBuffer);
+      const data = fs.readFileSync(file.path);
 
-        text += "\n\n[DOCUMENT]\n" + pdfData.text.slice(0, 3000); // limit size
+      // 📄 PDF → extract text
+      if (file.mimetype === "application/pdf") {
+        const pdfData = await pdf(data);
+        documentText += "\n\n[PDF]\n" + pdfData.text.slice(0, 1000);
       }
+
+      // 🖼️ IMAGE → send to Gemini
+      else if (
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/png" ||
+        file.mimetype === "image/webp"
+      ) {
+        attachments.push({
+          inlineData: {
+            data: data.toString("base64"),
+            mimeType: file.mimetype,
+          },
+        });
+      }
+
     } catch (err) {
       console.error("File processing error:", err);
     }
   }
 
-  return text;
+  return { documentText, attachments };
 };
 
+// 🔥 MAIN CONTROLLER
 export const analyzeCase = async (req, res) => {
   try {
-    const pdfModule = await import("pdf-parse");
-    const pdf = pdfModule.default || pdfModule;
     const { caseType, summary } = req.body;
     const files = req.files || [];
 
-    if (!files || files.length === 0) {
-    console.log("No files uploaded");
-}
-
-    console.log(" ANALYZE API HIT");
-
-    //  Avoid empty embedding calls
-    let relevantDocs = "";
-    if (summary && summary.trim().length > 10) {
-      relevantDocs = await findRelevantDocs(summary);
-    }
-
-    //  Extract file text instead of sending files
-    const documentText = await extractTextFromFiles(files);
-
-    //  LIMIT CONTEXT SIZE (VERY IMPORTANT)
-    const trimmedDocs = relevantDocs.slice(0, 2000);
-
-    //  OPTIMIZED PROMPT (LOW TOKENS + HIGH QUALITY)
-    const prompt = `You are an expert Indian legal advisor.
-
-Analyze the case using the given details.
-
------------------------------------
-CASE TYPE:
-${caseType || "Not provided"}
-
-CASE SUMMARY:
-${summary || "Not provided"}
-
-DOCUMENT CONTENT:
-${documentText || "None"}
-
-REFERENCE CONTEXT:
-${trimmedDocs || "None"}
------------------------------------
-
-Provide structured response:
-
-1. Case Summary  
-2. Legal Issues  
-3. Applicable Laws (India)  
-4. Risks  
-5. Recommended Actions  
-
-Use simple language. Do not guarantee outcomes.
-`;
-
     const apiKey = process.env.GEMINI_API_KEY;
 
-    console.log(" CALLING GEMINI");
+    // 🔥 IMPORT PDF PARSER (FIXED)
+    const pdfModule = await import("pdf-parse");
+    const pdf = pdfModule.default || pdfModule;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: prompt }], //  NO FILE ATTACHMENTS
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7, 
-            maxOutputTokens: 4096, 
-          },
-        }),
-      }
+    // 🔥 FILE PROCESSING
+    const { documentText, attachments } =
+      await extractTextFromFiles(files, pdf);
+
+    // 🔥 RAG (optional)
+    const relevantDocs = await findRelevantDocs(summary);
+
+    // 🔥 PROMPT (OPTIMIZED)
+    const prompt = `
+You are an expert Indian legal advisor.
+
+Case Type: ${caseType || "Not provided"}
+Summary: ${summary || "Not provided"}
+
+Documents:
+${documentText}
+
+Context:
+${relevantDocs}
+
+Provide:
+- Key issues
+- Applicable laws
+- Risks
+- Next steps
+- Success probability (%)
+
+Keep response concise.
+`;
+
+    // 🔥 AI CALL (FAIL-PROOF)
+    const aiResult = await callGeminiWithFallback(
+      prompt,
+      attachments,
+      apiKey
     );
 
-    const data = await response.json();
-
-    console.log("GEMINI RESPONSE RECEIVED");
-
-    let aiResult = "No response from AI";
-
-    if (data?.candidates?.length > 0) {
-      aiResult =
-        data.candidates[0]?.content?.parts?.[0]?.text || aiResult;
-    }
-
-    if (data.error) {
-      console.error("Gemini API Error:", data.error);
-      aiResult = "AI failed: " + data.error.message;
-    }
-
-    //  SAVE RESULT
+    // 🔥 SAVE TO DB
     const saved = await Analysis.create({
       caseType,
       summary,
       result: aiResult,
     });
 
-    //  CLEANUP FILES
+    // 🔥 CLEANUP FILES
     for (const file of files) {
       if (fs.existsSync(file.path)) {
         fs.unlinkSync(file.path);
