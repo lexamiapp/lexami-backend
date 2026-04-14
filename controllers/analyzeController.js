@@ -40,7 +40,7 @@ const callGeminiWithFallback = async (prompt, attachments, apiKey) => {
               ],
               generationConfig: {
                 temperature: 0.5,
-                maxOutputTokens: 1200,
+                maxOutputTokens: 10000,
                 topP: 0.9,
               },
             }),
