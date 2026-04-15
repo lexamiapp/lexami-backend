@@ -86,18 +86,18 @@ const advisorOnboardingSchema = new mongoose.Schema({
     type: String,
   },
 
-  // STEP 5: Verification Documents (URLs from Firebase Storage)
-  barCertificateUrl: {
-    type: String,
+  // STEP 5: Verification Documents (Base64 encoded from MongoDB)
+  barCertificate: {
+    type: String, // Base64 encoded PDF/Image
   },
-  identityProofUrl: {
-    type: String,
+  identityProof: {
+    type: String, // Base64 encoded PDF/Image
   },
-  photographUrl: {
-    type: String,
+  photograph: {
+    type: String, // Base64 encoded Image
   },
-  chamberProofUrl: {
-    type: String,
+  chamberProof: {
+    type: String, // Base64 encoded PDF/Image
   },
 
   // STEP 6: Declaration
