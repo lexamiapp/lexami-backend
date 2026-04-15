@@ -269,6 +269,8 @@ export const getAllAdvisors = async (req, res) => {
     const advisors = await AdvisorOnboarding.find({
       $or: [
         { verificationStatus: "pending" },
+        { verificationStatus: "unverified" },
+        { verificationStatus: "under_review" },
         { verificationStatus: "verified", isVerified: true }
       ]
     }).sort({ appliedAt: -1 });
