@@ -21,12 +21,10 @@ app.use("/api", advisorRoutes);
 app.use("/api", analyzeRoutes);
 
 mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   dbName: 'test',
 })
-  .then(() => console.log("MongoDB Connected to 'test' database"))
-  .catch(err => console.log("MongoDB Connection Error:", err));
+  .then(() => console.log("✓ MongoDB Connected to 'test' database"))
+  .catch(err => console.log("❌ MongoDB Connection Error:", err));
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
