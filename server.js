@@ -13,11 +13,11 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Increased limit for base64-encoded documents
+app.use(express.urlencoded({ limit: '50mb' }));
 app.use("/api", translateRoutes);
 app.use("/api", analyzeStreamRoute);
 app.use("/api", advisorRoutes);
-
 app.use("/api", analyzeRoutes);
 
 mongoose.connect(process.env.MONGO_URI, {
