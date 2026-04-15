@@ -157,9 +157,8 @@ const advisorOnboardingSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-advisorOnboardingSchema.pre("save", function (next) {
+advisorOnboardingSchema.pre("save", function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 export default mongoose.model("AdvisorOnboarding", advisorOnboardingSchema, "Advisor onboarding");
