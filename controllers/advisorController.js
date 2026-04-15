@@ -80,9 +80,13 @@ export const submitAdvisorOnboarding = async (req, res) => {
       designation,
       authorityDate,
       verificationStatus: "pending",
+      appliedAt: new Date(), // Explicit timestamp
+      updatedAt: new Date(),
     });
 
+    console.log(`📝 Creating advisor: ${fullName} with status: pending`);
     await newAdvisor.save();
+    console.log(`✓ Advisor saved successfully with ID: ${newAdvisor._id}`);
 
     res.status(201).json({
       message: "Advisor application submitted successfully",
@@ -254,12 +258,23 @@ export const getVerifiedAdvisors = async (req, res) => {
 // Get All Advisors (pending + verified) - for Marketplace Display
 export const getAllAdvisors = async (req, res) => {
   try {
+    // Debug: Check total documents
+    const totalCount = await AdvisorOnboarding.countDocuments();
+    console.log(`📊 Total documents in collection: ${totalCount}`);
+    
+    // Debug: Get all documents
+    const allDocs = await AdvisorOnboarding.find({});
+    console.log(`📋 All documents (raw): ${JSON.stringify(allDocs.map(d => ({ id: d._id, fullName: d.fullName, status: d.verificationStatus, isVerified: d.isVerified })), null, 2)}`);
+    
     const advisors = await AdvisorOnboarding.find({
       $or: [
         { verificationStatus: "pending" },
         { verificationStatus: "verified", isVerified: true }
       ]
     }).sort({ appliedAt: -1 });
+    
+    console.log(`✓ Found ${advisors.length} advisors matching filter`);
+    advisors.forEach(a => console.log(`  - ${a.fullName}: status=${a.verificationStatus}, isVerified=${a.isVerified}`));
 
     res.status(200).json({
       count: advisors.length,
