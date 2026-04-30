@@ -11,6 +11,32 @@ const advisorOnboardingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ["advocate", "counsellor"],
+    required: true,
+  },
+  advisorRole: {
+    type: String,
+    enum: ["Advocate", "Counsellor"],
+    required: false,
+  },
+  name: {
+    type: String,
+    required: false,
+  },
+  phone: {
+    type: String,
+    required: false,
+  },
+  specialization: {
+    type: String,
+    required: false,
+  },
+  experience: {
+    type: Number,
+    required: false,
+  },
 
   // STEP 1: Personal Details
   fullName: {

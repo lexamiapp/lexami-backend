@@ -5,6 +5,8 @@ export const submitAdvisorOnboarding = async (req, res) => {
   try {
     const {
       uid,
+      role,
+      advisorRole,
       email,
       fullName,
       fatherName,
@@ -35,9 +37,13 @@ export const submitAdvisorOnboarding = async (req, res) => {
       authorityDate,
     } = req.body;
 
+    const normalizedRole = (role || advisorRole || "").toString().trim().toLowerCase();
+    const validRoles = ["advocate", "counsellor"];
+    const roleAlias = normalizedRole === "advocate" ? "Advocate" : normalizedRole === "counsellor" ? "Counsellor" : null;
+
     // Validate required fields
-    if (!uid || !email || !fullName || !enrollmentNumber || !stateBarCouncil) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!uid || !normalizedRole || !validRoles.includes(normalizedRole) || !email || !fullName || !enrollmentNumber || !stateBarCouncil) {
+      return res.status(400).json({ error: "Missing required fields. Required: uid, role, email, fullName, enrollmentNumber, stateBarCouncil." });
     }
 
     // Check if advisor already exists
@@ -51,7 +57,13 @@ export const submitAdvisorOnboarding = async (req, res) => {
     // Create new advisor onboarding record
     const newAdvisor = new AdvisorOnboarding({
       uid,
+      role: normalizedRole,
+      advisorRole: roleAlias,
+      name: fullName,
       email,
+      phone: contactNumber,
+      specialization: areaOfPractice,
+      experience: yearsOfPractice,
       fullName,
       fatherName,
       dateOfBirth,
@@ -80,6 +92,7 @@ export const submitAdvisorOnboarding = async (req, res) => {
       designation,
       authorityDate,
       verificationStatus: "pending",
+      createdAt: new Date(),
       appliedAt: new Date(), // Explicit timestamp
       updatedAt: new Date(),
     });
@@ -258,25 +271,33 @@ export const getVerifiedAdvisors = async (req, res) => {
 // Get All Advisors (pending + verified) - for Marketplace Display
 export const getAllAdvisors = async (req, res) => {
   try {
-    // Debug: Check total documents
-    const totalCount = await AdvisorOnboarding.countDocuments();
-    console.log(`📊 Total documents in collection: ${totalCount}`);
-    
-    // Debug: Get all documents
-    const allDocs = await AdvisorOnboarding.find({});
-    console.log(`📋 All documents (raw): ${JSON.stringify(allDocs.map(d => ({ id: d._id, fullName: d.fullName, status: d.verificationStatus, isVerified: d.isVerified })), null, 2)}`);
-    
-    const advisors = await AdvisorOnboarding.find({
-      $or: [
-        { verificationStatus: "pending" },
-        { verificationStatus: "unverified" },
-        { verificationStatus: "under_review" },
-        { verificationStatus: "verified", isVerified: true }
-      ]
-    }).sort({ appliedAt: -1 });
-    
-    console.log(`✓ Found ${advisors.length} advisors matching filter`);
-    advisors.forEach(a => console.log(`  - ${a.fullName}: status=${a.verificationStatus}, isVerified=${a.isVerified}`));
+    const roleQuery = (req.query.role || "").toString().trim().toLowerCase();
+    const validRoles = ["advocate", "counsellor"];
+    const roleAlias = roleQuery === "advocate" ? "Advocate" : roleQuery === "counsellor" ? "Counsellor" : null;
+
+    const statusCriteria = [
+      { verificationStatus: "pending" },
+      { verificationStatus: "unverified" },
+      { verificationStatus: "under_review" },
+      { verificationStatus: "verified", isVerified: true }
+    ];
+
+    const filter = {
+      $and: [
+        { $or: statusCriteria },
+      ],
+    };
+
+    if (validRoles.includes(roleQuery) && roleAlias) {
+      filter.$and.push({
+        $or: [
+          { role: roleQuery },
+          { advisorRole: roleAlias },
+        ],
+      });
+    }
+
+    const advisors = await AdvisorOnboarding.find(filter).sort({ appliedAt: -1 });
 
     res.status(200).json({
       count: advisors.length,

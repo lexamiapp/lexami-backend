@@ -15,6 +15,8 @@ const router = express.Router();
 
 // Public Routes
 router.post("/advisors/onboarding/submit", submitAdvisorOnboarding);
+router.post("/advisors/register", submitAdvisorOnboarding);
+router.get("/advisors", getAllAdvisors);
 router.get("/advisors/verified", getVerifiedAdvisors);
 router.get("/advisors/all", getAllAdvisors);
 router.get("/advisors/application/:uid", getAdvisorApplication);
