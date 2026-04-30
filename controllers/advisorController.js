@@ -309,6 +309,48 @@ export const getAllAdvisors = async (req, res) => {
   }
 };
 
+export const getAdvisorsByRole = async (req, res) => {
+  try {
+    const roleParam = (req.params.role || "").toString().trim().toLowerCase();
+    const validRoles = ["advocate", "counsellor"];
+
+    if (!validRoles.includes(roleParam)) {
+      return res.status(400).json({ error: "Invalid role. Allowed values: advocate, counsellor." });
+    }
+
+    const roleAlias = roleParam === "advocate" ? "Advocate" : "Counsellor";
+
+    const advisors = await AdvisorOnboarding.find({
+      $and: [
+        {
+          $or: [
+            { verificationStatus: "pending" },
+            { verificationStatus: "unverified" },
+            { verificationStatus: "under_review" },
+            { verificationStatus: "verified", isVerified: true },
+          ],
+        },
+        {
+          $or: [
+            { role: roleParam },
+            { advisorRole: roleAlias },
+          ],
+        },
+      ],
+    }).sort({ appliedAt: -1 });
+
+    console.log(`🔎 Returning ${advisors.length} advisors for role=${roleParam}`);
+
+    res.status(200).json({
+      count: advisors.length,
+      advisors,
+    });
+  } catch (error) {
+    console.error("Error fetching advisors by role:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Get Advisor Statistics (Admin Dashboard)
 export const getAdvisorStats = async (req, res) => {
   try {

@@ -8,6 +8,7 @@ import {
   reviewAdvisor,
   getVerifiedAdvisors,
   getAllAdvisors,
+  getAdvisorsByRole,
   getAdvisorStats,
 } from "../controllers/advisorController.js";
 
@@ -17,6 +18,7 @@ const router = express.Router();
 router.post("/advisors/onboarding/submit", submitAdvisorOnboarding);
 router.post("/advisors/register", submitAdvisorOnboarding);
 router.get("/advisors", getAllAdvisors);
+router.get("/advisors/role/:role", getAdvisorsByRole);
 router.get("/advisors/verified", getVerifiedAdvisors);
 router.get("/advisors/all", getAllAdvisors);
 router.get("/advisors/application/:uid", getAdvisorApplication);
