@@ -1,13 +1,16 @@
 import fs from "fs";
 import Analysis from "../models/Analysis.js";
 import { findRelevantDocs } from "../services/searchService.js";
+import { callAI } from "../services/aiService.js";
 
-// 🔥 FAIL-PROOF GEMINI CALL
+// Legacy stub — kept so the file still compiles; real calls go through aiService
 const callGeminiWithFallback = async (prompt, attachments, apiKey) => {
+  // Current valid models in priority order (fastest → most capable)
   const models = [
-    "models/gemini-2.5-flash",
     "models/gemini-2.0-flash",
-    "models/gemini-2.5-flash-lite"
+    "models/gemini-1.5-flash",
+    "models/gemini-2.0-flash-lite",
+    "models/gemini-1.5-flash-latest",
   ];
 
   const MAX_RETRIES = 2;
@@ -18,15 +21,14 @@ const callGeminiWithFallback = async (prompt, attachments, apiKey) => {
         console.log(`Trying ${model} (Attempt ${attempt})`);
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000);
+        // 25s timeout — free-tier Gemini can take up to 20s for complex prompts
+        const timeout = setTimeout(() => controller.abort(), 25000);
 
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${apiKey}`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             signal: controller.signal,
             body: JSON.stringify({
               contents: [
@@ -34,13 +36,13 @@ const callGeminiWithFallback = async (prompt, attachments, apiKey) => {
                   role: "user",
                   parts: [
                     { text: prompt },
-                    ...attachments // 🔥 images support
+                    ...attachments,
                   ],
                 },
               ],
               generationConfig: {
                 temperature: 0.5,
-                maxOutputTokens: 10000,
+                maxOutputTokens: 8192,
                 topP: 0.9,
               },
             }),
@@ -49,35 +51,49 @@ const callGeminiWithFallback = async (prompt, attachments, apiKey) => {
 
         clearTimeout(timeout);
 
-        const data = await response.json();
-
-        if (data?.candidates?.length > 0) {
-          const text = data.candidates[0]?.content?.parts?.[0]?.text;
-
-          if (text && text.trim().length > 50) {
-            console.log(`✅ Success with ${model}`);
-            return text;
+        // Handle HTTP-level errors before parsing body
+        if (!response.ok) {
+          let errBody = {};
+          try { errBody = await response.json(); } catch (_) { /* ignore */ }
+          const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+          console.log(`❌ ${model} HTTP error: ${errMsg}`);
+          // 429 = quota/rate-limit, 503 = overloaded → try next model
+          // 400 with "quota" in message → also skip
+          if ([429, 503].includes(response.status) || errMsg.toLowerCase().includes('quota')) {
+            break; // break inner retry loop, try next model
           }
+          // 404 = model not found → skip to next model immediately
+          if (response.status === 404) break;
+          // 400 bad request with non-quota error → retry once then skip
+          continue;
         }
 
+        const data = await response.json();
+
+        // Check for API-level error in successful HTTP response
+        if (data?.error) {
+          console.log(`❌ ${model} API error: ${data.error.message}`);
+          break;
+        }
+
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text && text.trim().length > 30) {
+          console.log(`✅ Success with ${model}`);
+          return text;
+        }
+
+        console.log(`⚠️ ${model} returned empty/short response`);
+
       } catch (error) {
-        console.log(`❌ ${model} failed (Attempt ${attempt}):`, error.message);
-        await new Promise(r => setTimeout(r, 500));
+        const isTimeout = error.name === 'AbortError';
+        console.log(`❌ ${model} failed (Attempt ${attempt}): ${isTimeout ? 'TIMEOUT' : error.message}`);
+        if (!isTimeout) await new Promise(r => setTimeout(r, 800));
       }
     }
   }
 
   // 🔥 FINAL FALLBACK (NEVER FAIL)
-  return `
-⚠️ AI is currently busy.
-
-Basic Advice:
-- Check your case details carefully
-- Gather proper evidence
-- Consult a legal professional
-
-Try again in a few seconds.
-`;
+  return `⚠️ AI is currently busy. Please try again in a few moments.\n\nBasic steps while waiting:\n- Gather all relevant documents\n- Note key dates and facts\n- Consult a qualified lawyer for urgent matters`;
 };
 
 // 🔥 FILE PROCESSING (PDF + IMAGE)
@@ -222,30 +238,28 @@ ${relevantDocs}
 If the response is long, continue writing until fully complete. Do NOT stop midway.
 `;
 
-    // 🔥 AI CALL (FAIL-PROOF)
-    const aiResult = await callGeminiWithFallback(
-      prompt,
-      attachments,
-      apiKey
-    );
+    // 🔥 AI CALL — 3-tier cascade: Groq → Gemini 2.0 Flash → Gemini 2.5 Flash
+    const { text: aiResult, provider } = await callAI(prompt, attachments, apiKey);
+    console.log(`✅ Response from provider: ${provider}`);
 
-    // 🔥 SAVE TO DB
-    const saved = await Analysis.create({
-      caseType,
-      summary,
-      result: aiResult,
-    });
-
-    // 🔥 CLEANUP FILES
+    // 🔥 CLEANUP FILES (before DB save so files are freed even if DB fails)
     for (const file of files) {
-      if (fs.existsSync(file.path)) {
-        fs.unlinkSync(file.path);
-      }
+      try { if (fs.existsSync(file.path)) fs.unlinkSync(file.path); } catch (_) {}
+    }
+
+    // 🔥 SAVE TO DB (non-blocking — don't let a DB error kill the response)
+    let savedId = null;
+    try {
+      const saved = await Analysis.create({ caseType, summary, result: aiResult });
+      savedId = saved._id;
+    } catch (dbErr) {
+      console.error("⚠️ DB save failed (response still sent):", dbErr.message);
     }
 
     res.json({
       success: true,
-      data: saved,
+      analysisId: savedId,
+      result: aiResult,
     });
 
   } catch (error) {
