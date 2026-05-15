@@ -96,19 +96,32 @@ app.use("/api", careerRoutes);
 // ─── Health check ────────────────────────────────────────────────────────────
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
-// ─── MongoDB ─────────────────────────────────────────────────────────────────
-if (!process.env.MONGO_URI || process.env.MONGO_URI === "your_mongodb_connection_string") {
-  console.error("❌  MONGO_URI is not set. Please update your .env file.");
-  process.exit(1);
+// ─── Static Files (Website & Admin Panel) ────────────────────────────────────
+const websitePath = path.resolve(__dirname, "../website");
+const adminPath = path.resolve(__dirname, "../admin_panel");
+
+if (fs.existsSync(websitePath)) {
+  app.use("/", express.static(websitePath));
+  console.log("✓ Website served at http://localhost:5000/");
+}
+if (fs.existsSync(adminPath)) {
+  app.use("/admin", express.static(adminPath));
+  console.log("✓ Admin Panel served at http://localhost:5000/admin");
 }
 
-mongoose
-  .connect(process.env.MONGO_URI, { dbName: "test" })
-  .then(() => console.log("✓ MongoDB Connected to 'test' database"))
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-    process.exit(1);
-  });
+// ─── MongoDB ─────────────────────────────────────────────────────────────────
+if (!process.env.MONGO_URI || process.env.MONGO_URI === "your_mongodb_connection_string") {
+  console.warn("⚠️  MONGO_URI is not set. Advisor & Waitlist features will not work.");
+  console.warn("   Please update your .env file with a valid MongoDB URI.");
+} else {
+  mongoose
+    .connect(process.env.MONGO_URI, { dbName: "test" })
+    .then(() => console.log("✓ MongoDB Connected to 'test' database"))
+    .catch((err) => {
+      console.error("❌ MongoDB Connection Error:", err.message);
+      console.warn("   Continuing in local-only mode (DB features disabled).");
+    });
+}
 
 // ─── Start server ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
