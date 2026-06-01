@@ -97,11 +97,15 @@ app.use("/api", careerRoutes);
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 // ─── Static Files (Website & Admin Panel) ────────────────────────────────────
-const websitePath = path.resolve(__dirname, "../website");
+const websitePath = path.resolve(__dirname, "./website");
 const adminPath = path.resolve(__dirname, "../admin_panel");
 
 if (fs.existsSync(websitePath)) {
   app.use("/", express.static(websitePath));
+  // Flutter web uses hash routing — serve index.html for all non-API routes
+  app.get(/^(?!\/api|\/health|\/admin).*$/, (req, res) => {
+    res.sendFile(path.join(websitePath, "index.html"));
+  });
   console.log("✓ Website served at http://localhost:5000/");
 }
 if (fs.existsSync(adminPath)) {
