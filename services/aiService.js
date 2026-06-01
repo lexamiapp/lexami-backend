@@ -95,29 +95,41 @@ export const callAI = async (prompt, attachments = [], geminiKey) => {
     // Groq 429 = daily limit exhausted → fall through to Gemini
   }
 
-  // ── Tier 2: Gemini 2.0 Flash (paid, reliable) ────────────────────────────
+  // ── Tier 2: Gemini 1.5 Flash (Most reliable fallback) ────────────────────
   if (geminiKey) {
     try {
-      console.log("🚀 AI Tier 2: Gemini 2.0 Flash");
-      const text = await callGemini("models/gemini-2.0-flash", prompt, attachments, geminiKey, 25000);
+      console.log("🚀 AI Tier 2: Gemini 1.5 Flash");
+      const text = await callGemini("models/gemini-1.5-flash", prompt, attachments, geminiKey, 25000);
+      console.log("✅ Gemini 1.5 Flash success");
+      return { text, provider: "gemini-1.5-flash" };
+    } catch (e) {
+      const msg = e.message || String(e);
+      console.log(`⚠️  Gemini 1.5 Flash failed: ${msg.slice(0, 80)}`);
+      errors.push(`Gemini-1.5-Flash: ${msg}`);
+    }
+
+    // ── Tier 3: Gemini 1.5 Pro (High capability, last resort) ───────────────
+    try {
+      console.log("🚀 AI Tier 3: Gemini 1.5 Pro");
+      const text = await callGemini("models/gemini-1.5-pro", prompt, attachments, geminiKey, 35000);
+      console.log("✅ Gemini 1.5 Pro success");
+      return { text, provider: "gemini-1.5-pro" };
+    } catch (e) {
+      const msg = e.message || String(e);
+      console.log(`⚠️  Gemini 1.5 Pro failed: ${msg.slice(0, 80)}`);
+      errors.push(`Gemini-1.5-Pro: ${msg}`);
+    }
+
+    // ── Tier 4: Gemini 2.0 Flash Exp (Experimental) ──────────────────────────
+    try {
+      console.log("🚀 AI Tier 4: Gemini 2.0 Flash Exp");
+      const text = await callGemini("models/gemini-2.0-flash-exp", prompt, attachments, geminiKey, 25000);
       console.log("✅ Gemini 2.0 Flash success");
       return { text, provider: "gemini-2.0-flash" };
     } catch (e) {
       const msg = e.message || String(e);
       console.log(`⚠️  Gemini 2.0 Flash failed: ${msg.slice(0, 80)}`);
-      errors.push(`Gemini-Flash: ${msg}`);
-    }
-
-    // ── Tier 3: Gemini 2.5 Flash (best quality, last resort) ───────────────
-    try {
-      console.log("🚀 AI Tier 3: Gemini 2.5 Flash");
-      const text = await callGemini("models/gemini-2.5-flash", prompt, attachments, geminiKey, 35000);
-      console.log("✅ Gemini 2.5 Flash success");
-      return { text, provider: "gemini-2.5-flash" };
-    } catch (e) {
-      const msg = e.message || String(e);
-      console.log(`⚠️  Gemini 2.5 Flash failed: ${msg.slice(0, 80)}`);
-      errors.push(`Gemini-Pro: ${msg}`);
+      errors.push(`Gemini-2.0-Flash: ${msg}`);
     }
   }
 

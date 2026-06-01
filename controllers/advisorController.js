@@ -19,15 +19,17 @@ export const submitAdvisorOnboarding = async (req, res) => {
       name,
       email,
       phone,
+      category: req.body.category || "Advocate",
       specialization,
       experience,
       barCouncilNumber,
       city,
       state,
       bio,
+      verificationStatus: "pending",
     });
 
-    res.status(201).json({ success: true, data: advisor });
+    res.status(201).json({ success: true, advisor });
   } catch (error) {
     console.error("ADVISOR ONBOARD ERROR:", error);
     res.status(500).json({ error: "Internal Server Error", details: error.message });
@@ -49,7 +51,7 @@ export const getAdvisors = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(50);
 
-    res.json({ success: true, count: advisors.length, data: advisors });
+    res.json({ success: true, count: advisors.length, advisors });
   } catch (error) {
     console.error("GET ADVISORS ERROR:", error);
     res.status(500).json({ error: "Internal Server Error", details: error.message });
@@ -65,7 +67,7 @@ export const getUnverifiedAdvisors = async (req, res) => {
       .select("-__v")
       .sort({ createdAt: -1 });
 
-    res.json({ success: true, count: advisors.length, data: advisors });
+    res.json({ success: true, count: advisors.length, advisors });
   } catch (error) {
     console.error("GET UNVERIFIED ADVISORS ERROR:", error);
     res.status(500).json({ error: "Internal Server Error", details: error.message });
@@ -78,7 +80,7 @@ export const verifyAdvisor = async (req, res) => {
     const { id } = req.params;
     const advisor = await AdvisorOnboarding.findByIdAndUpdate(
       id,
-      { isVerified: true },
+      { isVerified: true, verificationStatus: "verified" },
       { new: true }
     );
 
